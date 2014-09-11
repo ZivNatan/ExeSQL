@@ -1,0 +1,19 @@
+SELECT * FROM ziv_schema.lstage;
+
+	
+select
+		
+	c.customerID,
+	
+	(case 
+			
+		when DATEDIFF('2008/07/31',c.LastPurchaseDate)>92  then  'churn'
+	
+		when  DATEDIFF('2008/07/31',c.FirstPurchaseDate)<31 then 'New'
+	
+		else   'Active'
+		
+	end )LifecycleStage
+
+		
+from customers c

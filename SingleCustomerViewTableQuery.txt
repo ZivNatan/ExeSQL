@@ -1,0 +1,119 @@
+
+
+select 
+	c.CustomerID ,
+
+	c.Gender,
+ 	c.FirstName,
+ 	c.Lastname,
+	c.State,
+	c.FirstPurchaseDate,
+        
+	c.LastPurchaseDate, 
+        
+	count(o.OrderID) NumOfOrders,
+		
+	lo.NumOfOrdersInTheLast3Month,
+        
+	sum(o.NumOfProducts) NumOfProducts,
+		
+	lp.NumOfProductsLast3Months,
+        
+	sum(o.TotalAmount) TotalOrders,
+		
+	tol.TotalOrdersLast3months,
+		 
+	DATEDIFF('2008/07/31',c.FirstPurchaseDate) Longevity,
+		
+	lcs.LifecycleStage
+
+
+
+from customers c
+	 join orders o 
+	 
+	on c.customerID = o.customerID
+  
+      
+	join
+(
+					
+		select 
+			
+		c.CustomerID,count(o.orderID) NumOfOrdersInTheLast3Month
+
+		from customers c join orders o
+ 
+			on c.customerID = o.customerID
+
+			where o.OrderDate > '2008/04/30'
+
+			group by c.CustomerID
+
+	) lo
+
+	on c.customerID = lo.customerID
+
+
+	join( 
+
+		select
+ 
+		c.CustomerID,sum(o.NumOfProducts) NumOfProductsLast3Months
+
+		from customers c join orders o
+ 
+		on c.customerID = o.customerID
+
+		where o.OrderDate > '2008/04/30'
+
+		group by c.CustomerID
+
+	) lp
+
+	on c.customerID = lp.customerID
+
+
+
+	join( 
+
+		select 
+		
+		c.CustomerID,sum(o.TotalAmount) TotalOrdersLast3Months
+	
+		from customers c join orders o 
+	
+		on c.customerID = o.customerID
+		
+		where o.OrderDate > '2008/04/30'
+		
+		group by c.CustomerID
+		
+	)tol
+		
+	on c.customerID = tol.customerID
+	
+	
+	join 
+		(select
+
+		customers.customerID,
+		
+		lstage.LifecycleStage
+		
+		from customers
+		
+		left OUTER  join  lstage
+		
+		on customers.customerID = lstage.customerID
+		
+	)lcs
+		
+	on c.customerID = lcs.customerID group by c.CustomerID
+ 
+
+
+
+group by c.CustomerID
+
+
